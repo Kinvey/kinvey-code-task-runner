@@ -1,0 +1,22 @@
+{
+  "name": "code-task-runner",
+  "version": "0.0.1",
+  "description": "Task Runner for Kinvey Microservices",
+  "engines": { "node": "= 0.10.x" },
+  "dependencies": {
+    "coffee-script": "1.7.1",
+    "config": "0.4.36",
+    "async" : "0.9.0"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "3.3.2",
+    "sinon": "*",
+    "coffeelint": "1.8.1"
+  },
+  "scripts": {
+    "pretest": "./node_modules/.bin/coffeelint --file ./coffeelint.json config lib test",
+    "test": "mocha test/lib/*",
+    "test-receiver": "mocha test/lib/receiver.test.coffee"
+  }
+}
