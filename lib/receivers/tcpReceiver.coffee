@@ -87,7 +87,6 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
               return
             else
               # make sure result is present, undefined is not stringified into the json
-              # make sure result is present, undefined is not stringified into the json
               if result is undefined then result = null
 
               # TODO: check size of ret and use a non-blocking serializer if too large

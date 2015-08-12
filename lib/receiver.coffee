@@ -1,4 +1,4 @@
-# Copyright (c) 2014, Kinvey, Inc. All rights reserved.
+# Copyright (c) 2015, Kinvey, Inc. All rights reserved.
 #
 # This software is licensed to you under the Kinvey terms of service located at
 # http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
@@ -15,8 +15,19 @@ receiver = require './receivers/tcpReceiver'
 
 process.env.NODE_ENV or= 'development'
 
-exports.start = (taskReceivedCallback, startedCallback) ->
-  receiver.startServer taskReceivedCallback, startedCallback
+exports.start = (taskReceivedCallback, receiverStartedCallback) ->
+  unless taskReceivedCallback? and receiverStartedCallback?
+    missingArgumentsError = new Error 'Missing Arguments'
+    missingArgumentsError.description = 'Cannot start Task Receiver - missing arguments'
+    missingArgumentsError.debug = 'Missing arguments - initializing a task receiver requires a taskReceived callback function and a receiver started callback function.'
+    throw missingArgumentsError
+
+  if typeof taskReceivedCallback isnt 'function' or typeof receiverStartedCallback isnt 'function'
+    invalidArgumentTypeError = new Error 'Invalid Argument Type'
+    invalidArgumentTypeError.description = 'Cannot start Task Receiver - invalid arguments'
+    invalidArgumentsError.debug = 'Invalid arguments - taskReceivedCallback and receiverStartedCallback must be functions.'
+
+  receiver.startServer taskReceivedCallback, receiverStartedCallback
 
 exports.stop = () ->
   receiver.stop()
