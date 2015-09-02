@@ -25,7 +25,7 @@ exports.start = (taskReceivedCallback, receiverStartedCallback) ->
   if typeof taskReceivedCallback isnt 'function' or typeof receiverStartedCallback isnt 'function'
     invalidArgumentTypeError = new Error 'Invalid Argument Type'
     invalidArgumentTypeError.description = 'Cannot start Task Receiver - invalid arguments'
-    invalidArgumentsError.debug = 'Invalid arguments - taskReceivedCallback and receiverStartedCallback must be functions.'
+    invalidArgumentTypeError.debug = 'Invalid arguments - taskReceivedCallback and receiverStartedCallback must be functions.'
 
   receiver.startServer taskReceivedCallback, receiverStartedCallback
 
