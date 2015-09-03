@@ -1,6 +1,6 @@
 {
-  "name": "code-task-runner",
-  "version": "0.0.1",
+  "name": "kinvey-code-task-runner",
+  "version": "0.0.0",
   "description": "Task Runner for Kinvey Microservices",
   "engines": { "node": "= 0.10.x" },
   "dependencies": {
