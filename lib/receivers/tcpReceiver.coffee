@@ -116,7 +116,7 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
   #console.log { containerId: dockerHost, message: "Server Error", error: err.toString(), stack: err.stack}
 
   process.nextTick () ->
-    server.listen config.server?.port or 7000, config.server?.host or '127.0.0.1', () ->
+    server.listen config.server?.port or 7000, () ->
       startedCallback()
 
 exports.stop = () ->
