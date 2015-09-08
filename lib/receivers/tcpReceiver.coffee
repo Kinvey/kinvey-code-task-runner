@@ -94,10 +94,14 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
             console.log "About to respond"
             # processBL returns a pre-assembled response object
             if err?
+              console.log "Responding with error"
+              console.log err
               socket.write JSON.stringify composeErrorReply('Internal Error', 'Unable to run dlc script', err)
               socket.write '\n'
               return
             else
+              console.log "Responding with success"
+              console.log result
               # make sure result is present, undefined is not stringified into the json
               if result is undefined then result = null
 
