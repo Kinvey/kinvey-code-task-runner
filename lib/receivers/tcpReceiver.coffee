@@ -30,6 +30,8 @@ composeErrorReply = (errorMessage, debugMessage, err, metadata) ->
     metadata: metadata ? {}
 
 parseTask = (task, callback) ->
+  console.log "parseTask Invoked"
+  console.log task
   unless task?
     return composeErrorReply 'Internal Error', 'Bad Request', new Error('Bad Request'), {}
   if typeof task is 'object'
@@ -77,6 +79,7 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
         return
       else
         console.log "About to parse task"
+        console.log task
         parseTask task, (parseError, parsedTask) ->
           console.log "Task parsing complete"
           if parseError?
