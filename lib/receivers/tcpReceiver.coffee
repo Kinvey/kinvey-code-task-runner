@@ -48,10 +48,12 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
   processingTasks = false
 
   server = net.createServer (socket) ->
+    console.log "Connection established..."
     data = ""
     line = ""
 
     socket.on 'data', (chunk) ->
+      console.log "chunk received"
       # always append the new data, then process task below
       data += chunk.toString()
 
@@ -69,17 +71,24 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
         # skip blank lines, processBL non-blank ones
         if (task) then break
       if (task.indexOf '{"healthCheck":1}') > -1
+        console.log "healthcheck!"
         healthStatus = JSON.stringify {"status":"ready"}
         socket.write "#{healthStatus}\n"
         return
       else
+        console.log "About to parse task"
         parseTask task, (parseError, parsedTask) ->
+          console.log "Task parsing complete"
           if parseError?
+            console.log "Parse error! #{parseError}"
             parseError.isError = true
             socket.write JSON.stringify composeErrorReply 'Internal Error', parseError.toString(), parseError
             socket.write '\n'
             return
+          console.log "About to invoke taskReceivedCallback"
+          console.log parsedTask
           taskReceivedCallback parsedTask, (err, result) ->
+            console.log "About to respond"
             # processBL returns a pre-assembled response object
             if err?
               socket.write JSON.stringify composeErrorReply('Internal Error', 'Unable to run dlc script', err)
