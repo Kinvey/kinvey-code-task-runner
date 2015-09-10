@@ -39,9 +39,10 @@ parseTask = (task, callback) ->
 
   try
     parsedTask = JSON.parse task
-    callback null, parsedTask
   catch e
-    callback new Error 'invalid task: unable to parse task json'
+    return callback new Error 'invalid task: unable to parse task json'
+
+  callback null, parsedTask
 
 exports.startServer = (taskReceivedCallback, startedCallback) ->
 
