@@ -172,7 +172,7 @@ describe "bl-runner", () ->
     task = {}
 
     taskReceivedCallback = (receivedTask, callback) ->
-      callback null, receivedTask()
+      callback null, receivedTask
 
     startReceiver taskReceivedCallback, () ->
 
