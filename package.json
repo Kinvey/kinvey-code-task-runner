@@ -11,7 +11,6 @@
   "devDependencies": {
     "mocha": "*",
     "should": "3.3.2",
-    "sinon": "*",
     "coffeelint": "1.8.1"
   },
   "scripts": {
