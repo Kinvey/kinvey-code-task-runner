@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "description": "Task Runner for Kinvey Microservices",
   "engines": { "node": "= 0.10.x" },
+  "author": "Kinvey <support@kinvey.com>",
+  "contributors": [
+    "Michael Salinger <mjsalinger@kinvey.com>"
+  ],
   "dependencies": {
     "coffee-script": "1.7.1",
     "config": "0.4.36",
