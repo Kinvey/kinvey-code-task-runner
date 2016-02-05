@@ -3,6 +3,8 @@
   "version": "0.1.1",
   "description": "Task Runner for Kinvey Microservices",
   "engines": { "node": "= 0.10.x" },
+  "repository"   : { "type": "git", "url": "Kinvey/kinvey-task-receiver" },
+  "license": "Apache-2.0",
   "author": "Kinvey <support@kinvey.com>",
   "contributors": [
     "Michael Salinger <mjsalinger@kinvey.com>"
@@ -13,7 +15,7 @@
     "async" : "0.9.0"
   },
   "devDependencies": {
-    "mocha": "*",
+    "mocha": "2.4.5",
     "should": "3.3.2",
     "coffeelint": "1.8.1"
   },
