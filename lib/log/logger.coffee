@@ -17,35 +17,30 @@ config = require('config')
 # Append log messages to local file
 logStream = fs.createWriteStream('output.log', { flags: 'a' })
 
-# format a millisecond unix timestamp as a decimal number
-formatMsTimestamp = (timestamp) ->
-  timestamp += ""
-  return timestamp.slice(0, -3) + "." + timestamp.slice(-3)
-
 formatMsIsoTimestring = (timestamp) ->
   return new Date(timestamp).toISOString()
 
 # Debug logger
 exports.DEBUG = (msg) ->
   timestamp = Date.now()
-  logStream.write "#{formatMsIsoTimestring(timestamp)} #{formatMsTimestamp(timestamp)} [DEBUG] #{msg}\n"
+  logStream.write "#{formatMsIsoTimestring(timestamp)} [DEBUG] #{msg}\n"
 
 # Info logger
 exports.INFO = (msg) ->
   timestamp = Date.now()
-  logStream.write "#{formatMsIsoTimestring(timestamp)} #{formatMsTimestamp(timestamp)} [INFO] #{msg}\n"
+  logStream.write "#{formatMsIsoTimestring(timestamp)} [INFO] #{msg}\n"
 
 # Warning logger
 exports.WARNING = (msg) ->
   timestamp = Date.now()
-  logStream.write "#{formatMsIsoTimestring(timestamp)} #{formatMsTimestamp(timestamp)} [WARN] #{msg}\n"
+  logStream.write "#{formatMsIsoTimestring(timestamp)} [WARN] #{msg}\n"
 
 # Error logger
 exports.ERROR = (msg) ->
   timestamp = Date.now()
-  logStream.write "#{formatMsIsoTimestring(timestamp)} #{formatMsTimestamp(timestamp)} [ERROR] #{msg}\n"
+  logStream.write "#{formatMsIsoTimestring(timestamp)} [ERROR] #{msg}\n"
 
 # Fatal logger
 exports.FATAL = (msg) ->
   timestamp = Date.now()
-  logStream.write "#{formatMsIsoTimestring(timestamp)} #{formatMsTimestamp(timestamp)} [FATAL] #{msg}\n"
+  logStream.write "#{formatMsIsoTimestring(timestamp)} [FATAL] #{msg}\n"
