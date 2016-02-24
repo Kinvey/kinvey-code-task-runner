@@ -12,6 +12,7 @@
 
 net = require 'net'
 config = require 'config'
+log = require '../log/logger'
 server = {}
 
 composeErrorReply = (errorMessage, debugMessage, err, metadata) ->
@@ -29,8 +30,8 @@ composeErrorReply = (errorMessage, debugMessage, err, metadata) ->
     metadata: metadata ? {}
 
 parseTask = (task, callback) ->
-  console.log "parseTask Invoked"
-  console.log task
+  log.DEBUG "parseTask Invoked"
+  log.DEBUG task
   unless task?
     return composeErrorReply 'Internal Error', 'Bad Request', new Error('Bad Request'), {}
   if typeof task is 'object'
@@ -47,15 +48,14 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
 
   data = ''
   line = ''
-  processingTasks = false
 
   server = net.createServer (socket) ->
-    console.log "Connection established..."
+    log.INFO "Connection established"
     data = ""
     line = ""
 
     socket.on 'data', (chunk) ->
-      console.log "chunk received"
+      log.DEBUG "chunk received"
       # always append the new data, then process task below
       data += chunk.toString()
 
@@ -73,35 +73,35 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
         # skip blank lines, processBL non-blank ones
         if (task) then break
       if (task.indexOf '{"healthCheck":1}') > -1
-        console.log "healthcheck!"
+        log.INFO "healthcheck!"
         healthStatus = JSON.stringify {"status":"ready"}
         socket.write "#{healthStatus}\n"
         return
       else
-        console.log "About to parse task"
-        console.log task
+        log.DEBUG 'About to parse task'
+        log.DEBUG "Task: #{task}"
         parseTask task, (parseError, parsedTask) ->
-          console.log "Task parsing complete"
+          log.DEBUG "Task parsing complete"
           if parseError?
-            console.log "Parse error! #{parseError}"
+            log.ERROR "Parse error! #{parseError}"
             parseError.isError = true
             socket.write JSON.stringify composeErrorReply 'Internal Error', parseError.toString(), parseError
             socket.write '\n'
             return
-          console.log "About to invoke taskReceivedCallback"
-          console.log parsedTask
+          log.DEBUG "About to invoke taskReceivedCallback"
+          log.DEBUG parsedTask
           taskReceivedCallback parsedTask, (err, result) ->
-            console.log "About to respond"
+            log.DEBUG "About to respond"
             # processBL returns a pre-assembled response object
             if err?
-              console.log "Responding with error"
-              console.log err
+              log.DEBUG "Responding with error"
+              log.ERROR err
               socket.write JSON.stringify composeErrorReply('Internal Error', 'Unable to run dlc script', err)
               socket.write '\n'
               return
             else
-              console.log "Responding with success"
-              console.log result
+              log.DEBUG "Responding with success"
+              log.DEBUG result
               # make sure result is present, undefined is not stringified into the json
               if result is undefined then result = null
 
