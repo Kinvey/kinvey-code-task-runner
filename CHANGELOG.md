@@ -1,7 +1,7 @@
 ## Changelog
 
-### v0.2.0
-* Using local file logger instead of console.log() for output
+### v0.1.3
+* Added local file logger to hide `console.log()` debug prints
 * Updated copyrights
 
 ### v0.1.2
