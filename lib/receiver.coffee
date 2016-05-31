@@ -10,11 +10,11 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 
-receiver = require './receivers/tcpReceiver'
+#receiver = require './receivers/tcpReceiver'
 
 process.env.NODE_ENV or= 'development'
 
-exports.start = (taskReceivedCallback, receiverStartedCallback) ->
+exports.start = (taskReceivedCallback, receiverStartedCallback, options) ->
   unless taskReceivedCallback? and receiverStartedCallback?
     missingArgumentsError = new Error 'Missing Arguments'
     missingArgumentsError.description = 'Cannot start Task Receiver - missing arguments'
@@ -26,7 +26,12 @@ exports.start = (taskReceivedCallback, receiverStartedCallback) ->
     invalidArgumentTypeError.description = 'Cannot start Task Receiver - invalid arguments'
     invalidArgumentTypeError.debug = 'Invalid arguments - taskReceivedCallback and receiverStartedCallback must be functions.'
 
-  receiver.startServer taskReceivedCallback, receiverStartedCallback
+    if options?.type is 'http'
+      receiver = require './receivers/httpReceiver'
+    else
+      receiver = require './receivers/tcpReceiver'
+
+  receiver.startServer taskReceivedCallback, receiverStartedCallback, options
 
 exports.stop = () ->
   receiver.stop()
