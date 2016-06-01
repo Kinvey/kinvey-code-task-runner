@@ -135,5 +135,6 @@ exports.startServer = (taskReceivedCallback, startedCallback, options) ->
   # helper methods
   router.get '/healthcheck', healthCheck
 
-  app.listen options.port, () ->
+  app.listen options.port, options.host, () ->
+    console.log "Service listening on #{options.port}"
     startedCallback()

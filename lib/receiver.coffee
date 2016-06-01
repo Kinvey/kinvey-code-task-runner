@@ -14,7 +14,7 @@
 
 process.env.NODE_ENV or= 'development'
 
-exports.start = (taskReceivedCallback, receiverStartedCallback, options) ->
+exports.start = (options, taskReceivedCallback, receiverStartedCallback) ->
   unless taskReceivedCallback? and receiverStartedCallback?
     missingArgumentsError = new Error 'Missing Arguments'
     missingArgumentsError.description = 'Cannot start Task Receiver - missing arguments'
