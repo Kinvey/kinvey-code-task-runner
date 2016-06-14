@@ -14,7 +14,8 @@ express = require 'express'
 config = require 'config'
 bodyParser = require 'body-parser'
 log = require '../log/logger'
-app = express()
+server = null
+app = null
 
 healthCheck = (req, res, next) ->
   return res.status(200).json({ healthy: true })
@@ -48,7 +49,7 @@ generateBaseTask = (req, res, next) ->
 
 appendId = (req, res, next) ->
   if req.params?.id?
-    req.task.request.entityId = req.param.id
+    req.task.request.entityId = req.params.id
   next()
 
 appendQuery = (req, res, next) ->
@@ -85,11 +86,11 @@ sendTask = (req, res, next) ->
       if err.headers?
         res.set err.headers
 
-      return res.setStatus(statusCode).json(err.body)
+      return res.sendStatus(statusCode).json(err.body)
 
     else if result?
       try
-        result = JSON.parse result
+        result.response.body = JSON.parse result.response.body
       catch
         # Ignore
 
@@ -99,9 +100,8 @@ sendTask = (req, res, next) ->
       if result.headers?
         res.set result.headers
       if result.continue?
-        result.set 'X-Kinvey-Request-Continue', result.continue
-
-      return result.sendStatus(result.statusCode).send(result.body)
+        res.set 'X-Kinvey-Request-Continue', result.continue
+      return res.status(result.response.statusCode).json(result.response.body)
 
     else
       log.DEBUG "Responding with error - no result or error"
@@ -111,30 +111,38 @@ sendTask = (req, res, next) ->
         description: 'Bad Request: An Internal Error occurred'
         debug: ''
 
-      return res.setStatus(500).json(err)
+      return res.sendStatus(500).json(err)
 
 exports.startServer = (taskReceivedCallback, startedCallback, options) ->
   app = express()
 
   app.set 'taskReceivedCallback', taskReceivedCallback
 
-  app.use bodyParser.json()
+  app.use bodyParser.json({ limit: 4096 })
 
   app.use (req, res, next) ->
     req.task = {}
     next()
 
-  router = app.Router()
-
-  router.get '/:serviceObjectName/:id?', generateBaseTask, appendQuery, appendId, sendTask
-  router.get '/:serviceObjectName/_count', generateBaseTask, appendQuery, appendCount, sendTask
-  router.post '/:serviceObjectName/', generateBaseTask, appendBody, sendTask
-  router.put '/:serviceObjectName/', generateBaseTask, appendId, appendQuery, sendTask
-  router.delete '/:serviceObjectName/:id?', generateBaseTask, appendId, appendQuery, sendTask
+  router = express.Router()
 
   # helper methods
   router.get '/healthcheck', healthCheck
 
-  app.listen options.port, options.host, () ->
+  router.get '/:serviceObjectName/_count', generateBaseTask, appendQuery, appendCount, sendTask
+  router.get '/:serviceObjectName/:id?', generateBaseTask, appendQuery, appendId, sendTask
+  router.post '/:serviceObjectName/', generateBaseTask, appendBody, sendTask
+  router.put '/:serviceObjectName/:id', generateBaseTask, appendId, appendBody, sendTask
+  router.delete '/:serviceObjectName/:id?', generateBaseTask, appendId, appendQuery, sendTask
+
+  app.use '/', router
+
+  options.host ?= 'localhost'
+  options.port ?= 10001
+
+  server = app.listen options.port, options.host, () ->
     console.log "Service listening on #{options.port}"
     startedCallback()
+
+exports.stop = () ->
+  server.close()

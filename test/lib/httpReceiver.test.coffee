@@ -1,0 +1,136 @@
+# Copyright (c) 2016 Kinvey Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+# in compliance with the License. You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software distributed under the License
+# is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+# or implied. See the License for the specific language governing permissions and limitations under
+# the License.
+
+should = require 'should'
+assert = require 'assert'
+supertest = require 'supertest'
+async = require 'async'
+path = require 'path'
+fs = require 'fs'
+runner = require '../../lib/receiver'
+
+startReceiver = (taskReceivedCallback, callback, options) ->
+  unless taskReceivedCallback?
+    taskReceivedCallback = () ->
+
+  unless options?
+    options =
+      type: 'http'
+      port: '7777'
+
+  runner.start options, taskReceivedCallback, () ->
+  setTimeout callback, 20
+
+stopReceiver = () ->
+  runner.stop()
+
+
+describe "http receiver", () ->
+
+  afterEach (done) ->
+    stopReceiver()
+    done()
+
+  it "should do a healthcheck" , (done) ->
+    startReceiver null, () ->
+      supertest('http://localhost:7777')
+      .get('/healthcheck')
+      .expect(200)
+      .end((err, res) ->
+        if err?
+          throw err
+        res.body.healthy.should.eql true
+        done()
+      )
+
+  it "should invoke taskReceivedCallback on receiving a task", (done) ->
+
+    taskReceivedCallback = (receivedTask, callback) ->
+      (typeof receivedTask).should.eql 'object'
+      #receivedTask.taskId.should.eql task.taskId
+      receivedTask.taskType.should.eql 'dataLink'
+      receivedTask.request.serviceObjectName.should.eql 'serviceObject'
+      receivedTask.request.method.should.eql 'GET'
+      receivedTask.response.statusCode = 200
+      receivedTask.response.body = {}
+      receivedTask.response.continue = false
+
+      callback null, receivedTask
+
+    startReceiver taskReceivedCallback, () ->
+      supertest('http://localhost:7777')
+      .get('/serviceObject/')
+      .expect(200)
+      .end(done)
+
+  it "should send a response", (done) ->
+    taskReceivedCallback = (receivedTask, callback) ->
+      (typeof receivedTask).should.eql 'object'
+      #receivedTask.taskId.should.eql task.taskId
+      receivedTask.taskType.should.eql 'dataLink'
+      receivedTask.request.serviceObjectName.should.eql 'serviceObject'
+      receivedTask.request.method.should.eql 'GET'
+      receivedTask.response.statusCode = 200
+      receivedTask.response.body = {foo: 'bar'}
+      receivedTask.response.continue = false
+
+      callback null, receivedTask
+
+    startReceiver taskReceivedCallback, () ->
+      supertest('http://localhost:7777')
+      .get('/serviceObject/')
+      .expect(200)
+      .end((err, res) ->
+        res.body.foo.should.eql 'bar'
+        res.statusCode.should.eql 200
+        done()
+      )
+
+  # some bugs only show the second time a task is run
+  it "should run multiple tasks", (done) ->
+    taskReceivedCallback = (receivedTask, callback) ->
+      (typeof receivedTask).should.eql 'object'
+      #receivedTask.taskId.should.eql task.taskId
+      receivedTask.taskType.should.eql 'dataLink'
+      receivedTask.request.serviceObjectName.should.eql 'serviceObject'
+      receivedTask.request.method.should.eql 'GET'
+      receivedTask.response.statusCode = 200
+      receivedTask.response.body = {foo: 'bar'}
+      receivedTask.response.continue = false
+
+      callback null, receivedTask
+
+    startReceiver taskReceivedCallback, () ->
+      counter = 2
+
+      supertest('http://localhost:7777')
+      .get('/serviceObject/')
+      .expect(200)
+      .end((err, res) ->
+        res.body.foo.should.eql 'bar'
+        res.statusCode.should.eql 200
+        counter--
+      )
+
+      supertest('http://localhost:7777')
+      .get('/serviceObject/')
+      .expect(200)
+      .end((err, res) ->
+        res.body.foo.should.eql 'bar'
+        res.statusCode.should.eql 200
+        counter--
+      )
+
+      setTimeout () ->
+        counter.should.eql 0
+        done()
+      , 250

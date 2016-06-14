@@ -14,6 +14,8 @@
 
 process.env.NODE_ENV or= 'development'
 
+receiver = null
+
 exports.start = (options, taskReceivedCallback, receiverStartedCallback) ->
   unless taskReceivedCallback? and receiverStartedCallback?
     missingArgumentsError = new Error 'Missing Arguments'
@@ -26,10 +28,10 @@ exports.start = (options, taskReceivedCallback, receiverStartedCallback) ->
     invalidArgumentTypeError.description = 'Cannot start Task Receiver - invalid arguments'
     invalidArgumentTypeError.debug = 'Invalid arguments - taskReceivedCallback and receiverStartedCallback must be functions.'
 
-    if options?.type is 'http'
-      receiver = require './receivers/httpReceiver'
-    else
-      receiver = require './receivers/tcpReceiver'
+  if options?.type is 'http'
+    receiver = require './receivers/httpReceiver'
+  else
+    receiver = require './receivers/tcpReceiver'
 
   receiver.startServer taskReceivedCallback, receiverStartedCallback, options
 

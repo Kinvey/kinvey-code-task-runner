@@ -11,7 +11,6 @@
 # the License.
 
 net = require 'net'
-config = require 'config'
 log = require '../log/logger'
 server = {}
 
@@ -44,7 +43,7 @@ parseTask = (task, callback) ->
 
   callback null, parsedTask
 
-exports.startServer = (taskReceivedCallback, startedCallback) ->
+exports.startServer = (taskReceivedCallback, startedCallback, options) ->
 
   data = ''
   line = ''
@@ -132,7 +131,7 @@ exports.startServer = (taskReceivedCallback, startedCallback) ->
   #console.log { containerId: dockerHost, message: "Server Error", error: err.toString(), stack: err.stack}
 
   process.nextTick () ->
-    server.listen config.server?.port or 7000, () ->
+    server.listen options.port or 7000, () ->
       startedCallback()
 
 exports.stop = () ->
