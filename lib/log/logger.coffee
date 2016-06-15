@@ -11,8 +11,6 @@
 # the License.
 
 fs = require('fs')
-util = require('util')
-config = require('config')
 
 # Append log messages to local file
 logStream = fs.createWriteStream('output.log', { flags: 'a' })

@@ -85,18 +85,22 @@ sendToRunner = (tasks, flags, callback) ->
         batch += JSON.stringify(obj) + "\n"
       conn.write batch
 
-startReceiver = (taskReceivedCallback, callback) ->
+startReceiver = (taskReceivedCallback, callback, options) ->
   unless taskReceivedCallback?
     taskReceivedCallback = () ->
 
-  runner.start taskReceivedCallback, () ->
+  unless options?
+    options =
+      type: 'tcp'
+
+  runner.start options, taskReceivedCallback, () ->
   setTimeout callback, 20
 
 stopReceiver = () ->
   runner.stop()
 
 
-describe "bl-runner", () ->
+describe "tcp receiver", () ->
 
   afterEach (done) ->
     stopReceiver()
