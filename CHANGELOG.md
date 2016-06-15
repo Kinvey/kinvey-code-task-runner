@@ -1,5 +1,8 @@
 ## Changelog
 
+### v0.2.0
+* Added http receiver to support external DLCs
+
 ### v0.1.3
 * Added local file logger to hide `console.log()` debug prints
 * Updated copyrights
