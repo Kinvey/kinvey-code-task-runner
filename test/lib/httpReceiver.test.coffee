@@ -11,11 +11,8 @@
 # the License.
 
 should = require 'should'
-assert = require 'assert'
 supertest = require 'supertest'
 async = require 'async'
-path = require 'path'
-fs = require 'fs'
 runner = require '../../lib/receiver'
 
 TEST_URL = 'http://localhost:7777'
