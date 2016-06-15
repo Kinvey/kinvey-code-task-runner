@@ -10,10 +10,7 @@
 # or implied. See the License for the specific language governing permissions and limitations under
 # the License.
 
-#receiver = require './receivers/tcpReceiver'
-
 process.env.NODE_ENV or= 'development'
-
 receiver = null
 
 exports.start = (options, taskReceivedCallback, receiverStartedCallback) ->
