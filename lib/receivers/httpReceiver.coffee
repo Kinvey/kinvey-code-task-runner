@@ -11,7 +11,6 @@
 # the License.
 
 express = require 'express'
-config = require 'config'
 bodyParser = require 'body-parser'
 log = require '../log/logger'
 server = null
