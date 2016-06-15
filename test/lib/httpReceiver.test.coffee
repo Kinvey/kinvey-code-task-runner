@@ -18,6 +18,10 @@ path = require 'path'
 fs = require 'fs'
 runner = require '../../lib/receiver'
 
+TEST_URL = 'http://localhost:7777'
+SERVICE_OBJECT_ROUTE = '/serviceObject'
+HEALTHCHECK_ROUTE = '/healthcheck/'
+
 startReceiver = (taskReceivedCallback, callback, options) ->
   unless taskReceivedCallback?
     taskReceivedCallback = () ->
@@ -42,8 +46,8 @@ describe "http receiver", () ->
 
   it "should do a healthcheck" , (done) ->
     startReceiver null, () ->
-      supertest('http://localhost:7777')
-      .get('/healthcheck')
+      supertest(TEST_URL)
+      .get(HEALTHCHECK_ROUTE)
       .expect(200)
       .end((err, res) ->
         if err?
@@ -56,7 +60,6 @@ describe "http receiver", () ->
 
     taskReceivedCallback = (receivedTask, callback) ->
       (typeof receivedTask).should.eql 'object'
-      #receivedTask.taskId.should.eql task.taskId
       receivedTask.taskType.should.eql 'dataLink'
       receivedTask.request.serviceObjectName.should.eql 'serviceObject'
       receivedTask.request.method.should.eql 'GET'
@@ -67,15 +70,14 @@ describe "http receiver", () ->
       callback null, receivedTask
 
     startReceiver taskReceivedCallback, () ->
-      supertest('http://localhost:7777')
-      .get('/serviceObject/')
+      supertest(TEST_URL)
+      .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
       .end(done)
 
   it "should send a response", (done) ->
     taskReceivedCallback = (receivedTask, callback) ->
       (typeof receivedTask).should.eql 'object'
-      #receivedTask.taskId.should.eql task.taskId
       receivedTask.taskType.should.eql 'dataLink'
       receivedTask.request.serviceObjectName.should.eql 'serviceObject'
       receivedTask.request.method.should.eql 'GET'
@@ -86,8 +88,8 @@ describe "http receiver", () ->
       callback null, receivedTask
 
     startReceiver taskReceivedCallback, () ->
-      supertest('http://localhost:7777')
-      .get('/serviceObject/')
+      supertest(TEST_URL)
+      .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
       .end((err, res) ->
         res.body.foo.should.eql 'bar'
@@ -99,7 +101,6 @@ describe "http receiver", () ->
   it "should run multiple tasks", (done) ->
     taskReceivedCallback = (receivedTask, callback) ->
       (typeof receivedTask).should.eql 'object'
-      #receivedTask.taskId.should.eql task.taskId
       receivedTask.taskType.should.eql 'dataLink'
       receivedTask.request.serviceObjectName.should.eql 'serviceObject'
       receivedTask.request.method.should.eql 'GET'
@@ -112,8 +113,8 @@ describe "http receiver", () ->
     startReceiver taskReceivedCallback, () ->
       counter = 2
 
-      supertest('http://localhost:7777')
-      .get('/serviceObject/')
+      supertest(TEST_URL)
+      .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
       .end((err, res) ->
         res.body.foo.should.eql 'bar'
@@ -121,8 +122,8 @@ describe "http receiver", () ->
         counter--
       )
 
-      supertest('http://localhost:7777')
-      .get('/serviceObject/')
+      supertest(TEST_URL)
+      .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
       .end((err, res) ->
         res.body.foo.should.eql 'bar'
