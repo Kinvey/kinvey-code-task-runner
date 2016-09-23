@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "Task Runner for Kinvey Microservices",
   "engines": { "node": "= 0.10.x" },
-  "repository"   : { "type": "git", "url": "Kinvey/kinvey-task-receiver" },
+  "repository"   : { "type": "git", "url": "Kinvey/kinvey-code-task-runner" },
   "license": "Apache-2.0",
   "author": "Kinvey <support@kinvey.com>",
   "contributors": [
