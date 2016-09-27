@@ -19,30 +19,32 @@ TEST_URL = 'http://localhost:7777'
 SERVICE_OBJECT_ROUTE = '/serviceObject'
 HEALTHCHECK_ROUTE = '/healthcheck/'
 
-startReceiver = (taskReceivedCallback, callback, options) ->
-  unless taskReceivedCallback?
-    taskReceivedCallback = () ->
-
-  unless options?
-    options =
-      type: 'http'
-      port: '7777'
-
-  runner.start options, taskReceivedCallback, () ->
-  setTimeout callback, 20
-
-stopReceiver = () ->
-  runner.stop()
-
-
 describe "http receiver", () ->
 
+  before () ->
+    @runner = runner
+
+    @startReceiver = (taskReceivedCallback, callback, options) ->
+      unless taskReceivedCallback?
+        taskReceivedCallback = () ->
+
+      unless options?
+        options =
+          type: 'http'
+          port: '7777'
+
+      @runner.start options, taskReceivedCallback, () ->
+        setTimeout callback, 20
+
+    @stopReceiver = () ->
+      @runner.stop()
+
   afterEach (done) ->
-    stopReceiver()
+    @stopReceiver()
     done()
 
   it "should do a healthcheck" , (done) ->
-    startReceiver null, () ->
+    @startReceiver null, () ->
       supertest(TEST_URL)
       .get(HEALTHCHECK_ROUTE)
       .expect(200)
@@ -66,7 +68,7 @@ describe "http receiver", () ->
 
       callback null, receivedTask
 
-    startReceiver taskReceivedCallback, () ->
+    @startReceiver taskReceivedCallback, () ->
       supertest(TEST_URL)
       .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
@@ -84,7 +86,7 @@ describe "http receiver", () ->
 
       callback null, receivedTask
 
-    startReceiver taskReceivedCallback, () ->
+    @startReceiver taskReceivedCallback, () ->
       supertest(TEST_URL)
       .get(SERVICE_OBJECT_ROUTE)
       .expect(200)
@@ -107,7 +109,7 @@ describe "http receiver", () ->
 
       callback null, receivedTask
 
-    startReceiver taskReceivedCallback, () ->
+    @startReceiver taskReceivedCallback, () ->
       counter = 2
 
       supertest(TEST_URL)
