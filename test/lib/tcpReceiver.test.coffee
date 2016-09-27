@@ -47,7 +47,6 @@ sendToRunner = (tasks, flags, callback) ->
   if (!Array.isArray(tasks))
     tasks = [tasks]
   taskCount = tasks.length
-
   conn = net.connect {host: testHost, port: testPort}, () ->
     conn.on 'error', (err) ->
       callback(err)
@@ -68,10 +67,10 @@ sendToRunner = (tasks, flags, callback) ->
         # FIXME: closing the connection interferes with subsequent connections too ??
         conn.end()
         done = true
-        if taskCount == 1
-          callback null, replies[0]
-        else
-          callback null, replies.slice(0, taskCount)
+      if taskCount == 1
+        callback null, replies[0]
+      else
+        callback null, replies.slice(0, taskCount)
 
     if (flags.alreadyJson)
       batch = ""
@@ -138,8 +137,6 @@ describe "tcp receiver", () ->
   it "should reject invalid json", (done) ->
     startReceiver null, () ->
       sendToRunner "invalid json", true, (err, obj) ->
-        console.log err
-        console.log obj
         if (err) then return done(err)
         obj.isError.should.eql true
         obj.debugMessage.should.containEql 'unable to parse'
