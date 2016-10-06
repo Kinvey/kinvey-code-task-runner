@@ -17,6 +17,7 @@ const should = require('should');
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
+const LOGIC_ROUTE = '/testObject/testHandler';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -407,6 +408,33 @@ describe('http receiver', () => {
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
         .end((err, res) => {
+          res.body.foo.should.eql('bar');
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
+  it.only('should send a logic message', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('businessLogic');
+      receivedTask.request.collectionName.should.eql('testObject');
+      receivedTask.request.method.should.eql('POST');
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = { foo: 'bar' };
+      receivedTask.response.continue = false;
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .expect(200)
+        .end((err, res) => {
+          console.log(res);
           res.body.foo.should.eql('bar');
           res.statusCode.should.eql(200);
           done();
