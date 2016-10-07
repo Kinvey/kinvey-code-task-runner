@@ -1,5 +1,9 @@
 ## Changelog
 
+### v0.3.0
+* Rewritten in ES2015
+* BACK-1921 Sets appMetadata and request.headers to empty objects if the headers for them aren't present
+
 ### v0.2.0
 * Added http receiver to support external DLCs
 
