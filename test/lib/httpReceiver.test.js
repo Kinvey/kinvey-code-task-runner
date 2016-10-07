@@ -388,27 +388,6 @@ describe('http receiver', () => {
     });
   });
 
-  it('should populate the response status code', (done) => {
-    function taskReceivedCallback(receivedTask, callback) {
-      receivedTask.should.be.an.Object();
-      should.exist(receivedTask.response.status);
-      receivedTask.response.status.should.eql(200);
-      receivedTask.response.statusCode = 200;
-      receivedTask.response.body = {};
-      receivedTask.response.continue = false;
-      callback(null, receivedTask);
-    }
-
-    startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
-      supertest(TEST_URL)
-        .get(SERVICE_OBJECT_ROUTE)
-        .set('X-Kinvey-Response-Status', 200)
-        .expect(200)
-        .end(done);
-    });
-  });
-
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
