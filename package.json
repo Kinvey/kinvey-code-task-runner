@@ -1,6 +1,6 @@
 {
   "name": "kinvey-code-task-runner",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Task Runner for Kinvey Microservices",
   "engines": { "node": "= 0.10.x" },
   "repository"   : { "type": "git", "url": "Kinvey/kinvey-code-task-runner" },
