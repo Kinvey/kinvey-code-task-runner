@@ -17,6 +17,8 @@ const should = require('should');
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
+const LOGIC_ROUTE = '/_flexFunctions/testHandler';
+const DISCOVERY_ROUTE = '/_command/discover';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -60,7 +62,7 @@ describe('http receiver', () => {
   it('should invoke taskReceivedCallback on receiving a task', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
@@ -391,7 +393,7 @@ describe('http receiver', () => {
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
@@ -414,11 +416,58 @@ describe('http receiver', () => {
     });
   });
 
+  it('should send a functions message', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('functions');
+      receivedTask.request.objectName.should.eql('testObject');
+      receivedTask.request.method.should.eql('POST');
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = { foo: 'bar' };
+      receivedTask.response.continue = false;
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .set('X-Kinvey-Object-Name', 'testObject')
+        .expect(200)
+        .end((err, res) => {
+          res.body.foo.should.eql('bar');
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
+  it('should send a discover message', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('serviceDiscovery');
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(DISCOVERY_ROUTE)
+        .expect(200)
+        .end((err, res) => {
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
   // some bugs only show up the second time a task is run
   it('should run multiple tasks', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
