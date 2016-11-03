@@ -18,6 +18,7 @@ const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
 const LOGIC_ROUTE = '/_flexFunctions/testHandler';
+const DISCOVERY_ROUTE = '/_command/discover';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -436,6 +437,26 @@ describe('http receiver', () => {
         .expect(200)
         .end((err, res) => {
           res.body.foo.should.eql('bar');
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
+  it('should send a discover message', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('serviceDiscovery');
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(DISCOVERY_ROUTE)
+        .expect(200)
+        .end((err, res) => {
           res.statusCode.should.eql(200);
           done();
         });
