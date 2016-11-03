@@ -1,5 +1,9 @@
 ## Changelog
 
+### v0.4.0
+* Fixed routing of discovery
+* BACK-18148: Allow functions to run externally
+
 ### v0.3.1
 * BACK-1944: Fixed task receiver protocol bug (missing newline)
 
