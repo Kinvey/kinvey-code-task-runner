@@ -61,7 +61,7 @@ describe('http receiver', () => {
   it('should invoke taskReceivedCallback on receiving a task', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
@@ -392,7 +392,7 @@ describe('http receiver', () => {
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
@@ -415,10 +415,10 @@ describe('http receiver', () => {
     });
   });
 
-  it.only('should send a logic message', (done) => {
+  it('should send a logic message', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('businessLogic');
+      receivedTask.taskType.should.eql('functions');
       receivedTask.request.collectionName.should.eql('testObject');
       receivedTask.request.method.should.eql('POST');
       receivedTask.response.statusCode = 200;
@@ -434,7 +434,6 @@ describe('http receiver', () => {
         .post(LOGIC_ROUTE)
         .expect(200)
         .end((err, res) => {
-          console.log(res);
           res.body.foo.should.eql('bar');
           res.statusCode.should.eql(200);
           done();
@@ -446,7 +445,7 @@ describe('http receiver', () => {
   it('should run multiple tasks', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
-      receivedTask.taskType.should.eql('dataLink');
+      receivedTask.taskType.should.eql('data');
       receivedTask.request.serviceObjectName.should.eql('serviceObject');
       receivedTask.request.method.should.eql('GET');
       receivedTask.response.statusCode = 200;
