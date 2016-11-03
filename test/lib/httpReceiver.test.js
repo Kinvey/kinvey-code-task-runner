@@ -433,7 +433,7 @@ describe('http receiver', () => {
       //noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
-        .set('X-Kinvey-Object-Name', 'testObject')
+        .send({ objectName: 'testObject' })
         .expect(200)
         .end((err, res) => {
           res.body.foo.should.eql('bar');
