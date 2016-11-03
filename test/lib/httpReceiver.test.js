@@ -17,7 +17,7 @@ const should = require('should');
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
-const LOGIC_ROUTE = '/testObject/testHandler';
+const LOGIC_ROUTE = '/_flexFunctions/testHandler';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -415,11 +415,11 @@ describe('http receiver', () => {
     });
   });
 
-  it('should send a logic message', (done) => {
+  it('should send a functions message', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
       receivedTask.taskType.should.eql('functions');
-      receivedTask.request.collectionName.should.eql('testObject');
+      receivedTask.request.objectName.should.eql('testObject');
       receivedTask.request.method.should.eql('POST');
       receivedTask.response.statusCode = 200;
       receivedTask.response.body = { foo: 'bar' };
@@ -432,6 +432,7 @@ describe('http receiver', () => {
       //noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
+        .set('X-Kinvey-Object-Name', 'testObject')
         .expect(200)
         .end((err, res) => {
           res.body.foo.should.eql('bar');
