@@ -1,6 +1,6 @@
 ## Changelog
 
-### v0.4.0
+### v1.0.0-rc.1
 * Fixed routing of discovery
 * BACK-18148: Allow functions to run externally
 
