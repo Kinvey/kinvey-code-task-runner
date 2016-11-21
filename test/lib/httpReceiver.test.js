@@ -420,6 +420,7 @@ describe('http receiver', () => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
       receivedTask.taskType.should.eql('functions');
+      receivedTask.taskName.should.eql('testHandler');
       receivedTask.request.objectName.should.eql('testObject');
       receivedTask.request.method.should.eql('POST');
       receivedTask.response.statusCode = 200;
@@ -436,7 +437,8 @@ describe('http receiver', () => {
         .send({ objectName: 'testObject' })
         .expect(200)
         .end((err, res) => {
-          res.body.foo.should.eql('bar');
+          res.body.response.body.foo.should.eql('bar');
+          res.body.response.statusCode.should.eql(200);
           res.statusCode.should.eql(200);
           done();
         });
@@ -448,6 +450,15 @@ describe('http receiver', () => {
       receivedTask.should.be.an.Object();
       receivedTask.taskType.should.eql('serviceDiscovery');
 
+      receivedTask.discoveryObjects = {
+        data: {
+          foo: 'bar'
+        },
+        functions: {
+          bar: 'foo'
+        }
+      };
+
       callback(null, receivedTask);
     }
 
@@ -458,6 +469,8 @@ describe('http receiver', () => {
         .expect(200)
         .end((err, res) => {
           res.statusCode.should.eql(200);
+          res.body.data.foo.should.eql('bar');
+          res.body.functions.bar.should.eql('foo');
           done();
         });
     });
