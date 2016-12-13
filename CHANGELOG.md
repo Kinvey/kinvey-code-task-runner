@@ -1,15 +1,18 @@
 ## Changelog
 
+### v1.0.0
+* Fixed FlexFunctions and discoverMetadata taskTypes in http metadata
+
 ### v1.0.0-rc.1
 * Fixed routing of discovery
-* BACK-18148: Allow functions to run externally
+* Allow functions to run externally
 
 ### v0.3.1
 * BACK-1944: Fixed task receiver protocol bug (missing newline)
 
 ### v0.3.0
 * Rewritten in ES2015
-* BACK-1921 Sets appMetadata and request.headers to empty objects if the headers for them aren't present
+* Sets appMetadata and request.headers to empty objects if the headers for them aren't present
 
 ### v0.2.0
 * Added http receiver to support external DLCs
