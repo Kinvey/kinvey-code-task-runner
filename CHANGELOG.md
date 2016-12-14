@@ -1,5 +1,8 @@
 ## Changelog
 
+### v1.1.0
+* Add mapping of auth endpoint mapping to http handler
+
 ### v1.0.0
 * Fixed FlexFunctions and discoverMetadata taskTypes in http metadata
 
