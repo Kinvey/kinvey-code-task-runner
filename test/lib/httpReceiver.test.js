@@ -19,7 +19,7 @@ const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
 const LOGIC_ROUTE = '/_flexFunctions/testHandler';
 const DISCOVERY_ROUTE = '/_command/discover';
-const AUTH_ROUTE = '/_auth/authenticate';
+const AUTH_ROUTE = '/_auth/someAuthHandler';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -481,6 +481,7 @@ describe('http receiver', () => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
       receivedTask.taskType.should.eql('auth');
+      receivedTask.taskName.should.eql('someAuthHandler');
       should.exist(receivedTask.request.body.username);
       should.exist(receivedTask.request.body.password);
       should.exist(receivedTask.request.body.options);
