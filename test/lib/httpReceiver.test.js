@@ -19,6 +19,7 @@ const SERVICE_OBJECT_ROUTE = '/serviceObject';
 const HEALTHCHECK_ROUTE = '/healthcheck/';
 const LOGIC_ROUTE = '/_flexFunctions/testHandler';
 const DISCOVERY_ROUTE = '/_command/discover';
+const AUTH_ROUTE = '/_auth/authenticate';
 
 describe('http receiver', () => {
   function startReceiver(taskReceivedCallback, callback, options) {
@@ -471,6 +472,39 @@ describe('http receiver', () => {
           res.statusCode.should.eql(200);
           res.body.data.foo.should.eql('bar');
           res.body.functions.bar.should.eql('foo');
+          done();
+        });
+    });
+  });
+
+  it('should send an auth task', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('auth');
+      should.exist(receivedTask.request.body.username);
+      should.exist(receivedTask.request.body.password);
+      should.exist(receivedTask.request.body.options);
+
+      receivedTask.response = {
+        body: {
+          authenticated: true,
+          token: 'qwerty1234'
+        }
+      };
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(AUTH_ROUTE)
+        .send({ username: 'foo', password: 'bar', options: {} })
+        .expect(200)
+        .end((err, res) => {
+          res.statusCode.should.eql(200);
+          res.body.authenticated.should.be.true();
+          res.body.token.should.eql('qwerty1234');
           done();
         });
     });
