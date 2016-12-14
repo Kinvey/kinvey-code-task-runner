@@ -1,5 +1,8 @@
 ## Changelog
 
+### v1.2.0
+* Supports multiple auth endpoints that maps to individual auth handler functions
+
 ### v1.1.0
 * Add mapping of auth endpoint mapping to http handler
 
