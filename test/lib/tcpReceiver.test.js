@@ -92,7 +92,7 @@ function sendToRunner(tasks, flags, callback) {
       let batch = '';
       for (const task of tasks) {
         batch += task;
-        if (task[task.length - 1] !== '\n') {
+        if (task && task[task.length - 1] !== '\n') {
           batch += '\n';
         }
       }
@@ -180,6 +180,22 @@ describe('tcp receiver', () => {
         obj.debugMessage.should.containEql('unable to parse');
         return done();
       });
+    });
+  });
+
+  it.only('should not process a null task', (done) => {
+    let processed = false;
+
+    startReceiver(null, () => {
+      sendToRunner(null, true, (err, obj) => {
+        processed = true;
+        done(err || new Error('Returned'));
+      });
+
+      setTimeout(() => {
+        processed.should.eql(false);
+        done();
+      }, 3000);
     });
   });
 
