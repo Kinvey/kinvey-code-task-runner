@@ -183,7 +183,7 @@ describe('tcp receiver', () => {
     });
   });
 
-  it.only('should not process a null task', (done) => {
+  it('should not process a null task', (done) => {
     let processed = false;
 
     startReceiver(null, () => {
