@@ -1,5 +1,8 @@
 ## Changelog
 
+### v1.2.1
+* Fix bug where receiver would crash if a null task object was received via the tcpReceiver stream
+
 ### v1.2.0
 * Supports multiple auth endpoints that maps to individual auth handler functions
 
