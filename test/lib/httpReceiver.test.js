@@ -422,8 +422,10 @@ describe('http receiver', () => {
       receivedTask.should.be.an.Object();
       receivedTask.taskType.should.eql('functions');
       receivedTask.taskName.should.eql('testHandler');
+      receivedTask.hookType.should.eql('customEndpoint');
       receivedTask.request.objectName.should.eql('testObject');
       receivedTask.request.method.should.eql('POST');
+      receivedTask.request.entityId.should.eql(5);
       receivedTask.response.statusCode = 200;
       receivedTask.response.body = { foo: 'bar' };
       receivedTask.response.continue = false;
@@ -435,7 +437,7 @@ describe('http receiver', () => {
       //noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
-        .send({ objectName: 'testObject' })
+        .send({ objectName: 'testObject', entityId: 5 })
         .expect(200)
         .end((err, res) => {
           res.body.response.body.foo.should.eql('bar');
