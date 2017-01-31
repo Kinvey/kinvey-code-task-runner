@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.0.0
+* Add hookType to flex functions
+* BREAKING:  Flex Function body argument `entityId` is now `id`.  
+
 ### v1.2.1
 * Fix bug where receiver would crash if a null task object was received via the tcpReceiver stream
 
