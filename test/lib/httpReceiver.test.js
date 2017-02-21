@@ -13,6 +13,7 @@
 const supertest = require('supertest');
 const runner = require('../../lib/receiver');
 const should = require('should');
+const bigBody = require('../scripts/bigBody.json'); // 8.90 KB JSON
 
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
@@ -28,7 +29,7 @@ describe('http receiver', () => {
     }
 
     if (!options) {
-      options = { type: 'http', port: '7777' };
+      options = { type: 'http', port: '7777', requestBodyLimit: 10240 /* 10 KB */ };
     }
 
     runner.start(options, taskReceivedCallback, () => {
@@ -438,6 +439,37 @@ describe('http receiver', () => {
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
         .send({ objectName: 'testObject', entityId: 5 })
+        .expect(200)
+        .end((err, res) => {
+          res.body.response.body.foo.should.eql('bar');
+          res.body.response.statusCode.should.eql(200);
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
+  it('should send a functions message with a big json body', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskType.should.eql('functions');
+      receivedTask.taskName.should.eql('testHandler');
+      receivedTask.hookType.should.eql('customEndpoint');
+      receivedTask.request.objectName.should.eql('testObject');
+      receivedTask.request.method.should.eql('POST');
+      receivedTask.request.entityId.should.eql(5);
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = { foo: 'bar' };
+      receivedTask.response.continue = false;
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .send(bigBody)
         .expect(200)
         .end((err, res) => {
           res.body.response.body.foo.should.eql('bar');
