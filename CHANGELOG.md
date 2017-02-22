@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.1.0
+* Added option to set request body size limit, and defaulted to 26 MB
+* Fixed a concurrency issue in the TCP receiver that was causing unhandled exceptions to be swallowed and tasks to not complete properly when an unhandled exception occured.
+
 ### 2.0.0
 * Add hookType to flex functions
 * BREAKING:  Flex Function body argument `entityId` is now `id`.  
