@@ -351,6 +351,27 @@ describe('http receiver', () => {
     });
   });
 
+  it('should populate the tempObjectStore', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      should.exist(receivedTask.request.tempObjectStore);
+      receivedTask.request.tempObjectStore.foo.should.eql('bar');
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = {};
+      receivedTask.response.continue = false;
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .send({ tempObjectStore: { foo: 'bar' }, body: {} })
+        .expect(200)
+        .end(done);
+    });
+  });
+
   it('should populate the userId', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
