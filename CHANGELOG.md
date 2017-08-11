@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.2.0
+* Added tempObjectStore mapping to external flex requests
+
 ### 2.1.0
 * Added option to set request body size limit, and defaulted to 26 MB
 * Fixed a concurrency issue in the TCP receiver that was causing unhandled exceptions to be swallowed and tasks to not complete properly when an unhandled exception occured.
