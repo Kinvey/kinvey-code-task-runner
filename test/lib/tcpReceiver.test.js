@@ -157,6 +157,75 @@ describe('tcp receiver', () => {
     done();
   });
 
+  describe('error handling', () => {
+    it('should reject invalid json', (done) => {
+      startReceiver(null, () => {
+        sendToRunner('invalid json', true, (err, obj) => {
+          if (err) {
+            return done(err);
+          }
+          obj.isError.should.be.true();
+          obj.debugMessage.should.containEql('unable to parse');
+          return done();
+        });
+      });
+    });
+
+    it('should handle an error, which is an instance of Error', (done) => {
+      function onTask(err, callback) {
+        callback(new Error('some error message'));
+      }
+      startReceiver(onTask, () => {
+        const task = makeTasks(1)[0];
+        sendToRunner(task, false, (err, obj) => {
+          if (err) {
+            return done(err);
+          }
+          obj.isError.should.be.true();
+          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.error.should.eql(new Error('some error message').toString());
+          return done();
+        });
+      });
+    });
+
+    it('should handle an error, which is not an instance of Error', (done) => {
+      function onTask(err, callback) {
+        callback({ test: true });
+      }
+      startReceiver(onTask, () => {
+        const task = makeTasks(1)[0];
+        sendToRunner(task, false, (err, obj) => {
+          if (err) {
+            return done(err);
+          }
+          obj.isError.should.be.true();
+          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.error.should.deepEqual({ test: true });
+          return done();
+        });
+      });
+    });
+
+    it('should handle an error, which is not serializable', (done) => {
+      function onTask(err, callback) {
+        callback({ test: this });
+      }
+      startReceiver(onTask, () => {
+        const task = makeTasks(1)[0];
+        sendToRunner(task, false, (err, obj) => {
+          if (err) {
+            return done(err);
+          }
+          obj.isError.should.be.true();
+          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.error.should.eql('Error argument not instance of Error and not stringifiable');
+          return done();
+        });
+      });
+    });
+  });
+
   it('should do a healthcheck', (done) => {
     startReceiver(null, () => {
       sendToRunner({ healthCheck: 1 }, (err, obj) => {
@@ -165,19 +234,6 @@ describe('tcp receiver', () => {
         }
 
         obj.status = 'ready';
-        return done();
-      });
-    });
-  });
-
-  it('should reject invalid json', (done) => {
-    startReceiver(null, () => {
-      sendToRunner('invalid json', true, (err, obj) => {
-        if (err) {
-          return done(err);
-        }
-        obj.isError.should.be.true();
-        obj.debugMessage.should.containEql('unable to parse');
         return done();
       });
     });
