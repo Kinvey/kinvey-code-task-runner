@@ -182,7 +182,7 @@ describe('tcp receiver', () => {
             return done(err);
           }
           obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.debugMessage.should.containEql('Unable to execute Flex method');
           obj.error.should.eql(new Error('some error message').toString());
           return done();
         });
@@ -200,7 +200,7 @@ describe('tcp receiver', () => {
             return done(err);
           }
           obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.debugMessage.should.containEql('Unable to execute Flex method');
           obj.error.should.deepEqual({ test: true });
           return done();
         });
@@ -218,7 +218,7 @@ describe('tcp receiver', () => {
             return done(err);
           }
           obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to run dlc script');
+          obj.debugMessage.should.containEql('Unable to execute Flex method');
           obj.error.should.eql('Error argument not instance of Error and not stringifiable');
           return done();
         });
