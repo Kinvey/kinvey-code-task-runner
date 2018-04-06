@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.2.1
+* Attempt to make error handling a bit more robust by handling cases when error object is not an instance of the Error class. Fix handling parse errors when no task object is passed, or it's an empty string.
+
 ### 2.2.0
 * Added tempObjectStore mapping to external flex requests
 
