@@ -270,6 +270,42 @@ describe('tcp receiver', () => {
     });
   });
 
+  it('should set query if legacy params passed', (done) => {
+    let task = {};
+
+    function taskReceivedCallback(receivedTask) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskId.should.eql(task.taskId);
+      receivedTask.request.query.foo.should.eql('bar');
+      done();
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      task = makeTasks(1)[0];
+      task.request.params.foo = 'bar';
+      sendToRunner(task, false, () => null);
+    });
+  });
+
+  it('should not set query if already present, even if legacy params passed', (done) => {
+    let task = {};
+
+    function taskReceivedCallback(receivedTask) {
+      receivedTask.should.be.an.Object();
+      receivedTask.taskId.should.eql(task.taskId);
+      should.not.exist(receivedTask.request.query.foo);
+      receivedTask.request.query.some.should.eql('value');
+      done();
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      task = makeTasks(1)[0];
+      task.request.params.foo = 'bar';
+      task.request.query = { some: 'value' };
+      sendToRunner(task, false, () => null);
+    });
+  });
+
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       callback(null, receivedTask);

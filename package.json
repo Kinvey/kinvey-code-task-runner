@@ -2,8 +2,13 @@
   "name": "kinvey-code-task-runner",
   "version": "2.2.1",
   "description": "Task Runner for Kinvey Microservices",
-  "engines": { "node": "= 0.10.x" },
-  "repository"   : { "type": "git", "url": "Kinvey/kinvey-code-task-runner" },
+  "engines": {
+    "node": "= 0.10.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "Kinvey/kinvey-code-task-runner"
+  },
   "license": "Apache-2.0",
   "author": "Kinvey <support@kinvey.com>",
   "contributors": [
@@ -13,7 +18,7 @@
     "coffee-script": "1.10.0",
     "express": "4.13.4",
     "body-parser": "1.15.0",
-    "async" : "1.5.2"
+    "async": "1.5.2"
   },
   "devDependencies": {
     "mocha": "2.5.3",
