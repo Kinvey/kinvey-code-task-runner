@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.2.2
+* FLEX-166: Copy legacy request.params to request.query to prevent request.query being undefined in FlexFunctions
+
 ### 2.2.1
 * Attempt to make error handling a bit more robust by handling cases when error object is not an instance of the Error class. Fix handling parse errors when no task object is passed, or it's an empty string.
 
