@@ -331,6 +331,30 @@ describe('http receiver', () => {
     });
   });
 
+  it('should populate the response if sent as headers', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      should.exist(receivedTask.request.username);
+      receivedTask.response.status.should.eql('202');
+      receivedTask.response.body.should.eql(JSON.stringify({ foo: 'bar' }));
+      receivedTask.response.headers.should.eql(JSON.stringify({ someheader: 'somevalue' }));
+      receivedTask.response.body = {};
+      receivedTask.response.continue = false;
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .get(SERVICE_OBJECT_ROUTE)
+        .set('X-Kinvey-Response-Status', 202)
+        .set('X-Kinvey-Response-Body', JSON.stringify({ foo: 'bar' }))
+        .set('X-Kinvey-Response-Headers', JSON.stringify({ someheader: 'somevalue' }))
+        .expect(200)
+        .end(done);
+    });
+  });
+
   it('should set the username to an empty string if not present', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
@@ -467,6 +491,31 @@ describe('http receiver', () => {
           res.statusCode.should.eql(200);
           done();
         });
+    });
+  });
+
+  it('should populate the response', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.should.be.an.Object();
+      receivedTask.response.status.should.eql(202);
+      receivedTask.response.body = { foo: 'bar' };
+      receivedTask.response.headers.should.eql({ someheader: 'somevalue' });
+      receivedTask.response.continue = false;
+
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      //noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .send({ objectName: 'testObject', entityId: 5, response: {
+          status: 202,
+          body: { foo: 'bar' },
+          headers: { someheader: 'somevalue' }
+        }
+        })
+        .end(done);
     });
   });
 
