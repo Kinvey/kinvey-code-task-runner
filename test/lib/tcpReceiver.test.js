@@ -306,7 +306,7 @@ describe('tcp receiver', () => {
     });
   });
 
-  it.only('should not set query if no request object is passed', (done) => {
+  it('should not set query if no request object is passed', (done) => {
     let task = {};
 
     function taskReceivedCallback(receivedTask) {
