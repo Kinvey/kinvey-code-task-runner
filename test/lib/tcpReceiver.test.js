@@ -306,6 +306,21 @@ describe('tcp receiver', () => {
     });
   });
 
+  it.only('should not set query if no request object is passed', (done) => {
+    let task = {};
+
+    function taskReceivedCallback(receivedTask) {
+      receivedTask.should.be.an.Object();
+      should.not.exist(receivedTask.request);
+      done();
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      task = {};
+      sendToRunner(task, false, () => null);
+    });
+  });
+
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       callback(null, receivedTask);
