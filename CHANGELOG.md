@@ -1,5 +1,9 @@
 ## Changelog
 
+### 2.2.3
+* FLEX-220 Added response object parsing from body for Flex Functions
+* Added extra check to ensure parsedTask.request isn't undefined
+
 ### 2.2.2
 * FLEX-166: Copy legacy request.params to request.query to prevent request.query being undefined in FlexFunctions
 
