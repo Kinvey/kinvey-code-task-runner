@@ -4,3 +4,4 @@
 --globals currentObject
 --bail
 --require coffee-script/register
+--exit
