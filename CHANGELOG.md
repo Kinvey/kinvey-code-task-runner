@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.2.4
+* Updated packages that failed nsp audit
+
 ### 2.2.3
 * FLEX-220 Added response object parsing from body for Flex Functions
 * Added extra check to ensure parsedTask.request isn't undefined
