@@ -2,6 +2,5 @@
 --reporter spec
 --ui bdd
 --globals currentObject
---bail
 --require coffee-script/register
 --exit
