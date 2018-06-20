@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Kinvey Inc.
+// Copyright (c) 2018 Kinvey Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License. You may obtain a copy of the License at
@@ -13,12 +13,12 @@
 const should = require('should');
 const net = require('net');
 const async = require('async');
-const runner = require('../../lib/receiver');
+const runner = require('../../../lib/receiver');
 
 const testPort = 7000;
 const testHost = 'localhost';
 
-const sampleTask = require('./../scripts/sampleTask');
+const sampleTask = require('./../../scripts/sampleTask');
 
 function uniqid(prefix) {
   return (prefix || '') + (Math.random() * 16000000 >>> 0).toString();

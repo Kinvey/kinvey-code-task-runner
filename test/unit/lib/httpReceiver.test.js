@@ -1,4 +1,4 @@
-// Copyright (c) 2016 Kinvey Inc.
+// Copyright (c) 2018 Kinvey Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
 // in compliance with the License. You may obtain a copy of the License at
@@ -11,9 +11,9 @@
 // the License.
 
 const supertest = require('supertest');
-const runner = require('../../lib/receiver');
+const runner = require('../../../lib/receiver');
 const should = require('should');
-const bigBody = require('../scripts/bigBody.json'); // 8.90 KB JSON
+const bigBody = require('../../scripts/bigBody.json'); // 8.90 KB JSON
 
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';

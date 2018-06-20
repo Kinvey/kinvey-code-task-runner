@@ -31,8 +31,12 @@
   },
   "scripts": {
     "pretest": "./node_modules/.bin/eslint lib test",
-    "test": "mocha test/lib/*",
-    "test-tcp-receiver": "mocha test/lib/tcpReceiver.test.coffee",
-    "test-http-receiver": "mocha test/lib/httpReceiver.test.coffee"
+    "lint": "npm run pretest",
+    "test": "npm run test-unit && npm run test-integration",
+    "test-unit": "mocha test/unit/*/*",
+    "test-integration": "echo \"No integration tests available for the moment\"",
+    "test-tcp-receiver": "mocha test/unit/lib/tcpReceiver.test.coffee",
+    "test-http-receiver": "mocha test/unit/lib/httpReceiver.test.coffee",
+    "test-npm-security": "npm audit"
   }
 }
