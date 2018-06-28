@@ -17,6 +17,7 @@ const runner = require('../../../lib/receiver');
 
 const testPort = 7000;
 const testHost = 'localhost';
+const connections = [];
 
 const sampleTask = require('./../../scripts/sampleTask');
 
@@ -77,7 +78,6 @@ function sendToRunner(tasks, flags, callback) {
 
       // close the connection to not leak the file descriptor.  Ignore 'close' events.
       // FIXME:  closing the connection interferes with subsequent connections too ??
-
       conn.end();
       done = true;
 
@@ -105,6 +105,8 @@ function sendToRunner(tasks, flags, callback) {
       conn.write(batch);
     }
   });
+
+  connections.push(conn);
 }
 
 function startReceiver(taskReceivedCallback, callback, options) {
@@ -123,8 +125,8 @@ function startReceiver(taskReceivedCallback, callback, options) {
   });
 }
 
-function stopReceiver() {
-  runner.stop();
+function stopReceiver(callback) {
+  runner.stop(callback);
 }
 
 describe('tcp receiver', () => {
@@ -153,75 +155,77 @@ describe('tcp receiver', () => {
   }
 
   afterEach((done) => {
-    stopReceiver();
-    done();
+    while (connections.length > 0) {
+      const conn = connections.pop();
+      conn.end();
+    }
+
+    stopReceiver(done);
   });
 
-  describe('error handling', () => {
-    it('should reject invalid json', (done) => {
-      startReceiver(null, () => {
-        sendToRunner('invalid json', true, (err, obj) => {
-          if (err) {
-            return done(err);
-          }
-          obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('unable to parse');
-          return done();
-        });
+  it('should reject invalid json', (done) => {
+    startReceiver(null, () => {
+      sendToRunner('invalid json', true, (err, obj) => {
+        if (err) {
+          return done(err);
+        }
+        obj.isError.should.be.true();
+        obj.debugMessage.should.containEql('unable to parse');
+        return done();
       });
     });
+  });
 
-    it('should handle an error, which is an instance of Error', (done) => {
-      function onTask(err, callback) {
-        callback(new Error('some error message'));
-      }
-      startReceiver(onTask, () => {
-        const task = makeTasks(1)[0];
-        sendToRunner(task, false, (err, obj) => {
-          if (err) {
-            return done(err);
-          }
-          obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to execute Flex method');
-          obj.error.should.eql(new Error('some error message').toString());
-          return done();
-        });
+  it('should handle an error, which is an instance of Error', (done) => {
+    function onTask(err, callback) {
+      callback(new Error('some error message'));
+    }
+    startReceiver(onTask, () => {
+      const task = makeTasks(1)[0];
+      sendToRunner(task, false, (err, obj) => {
+        if (err) {
+          return done(err);
+        }
+        obj.isError.should.be.true();
+        obj.debugMessage.should.containEql('Unable to execute Flex method');
+        obj.error.should.eql(new Error('some error message').toString());
+        return done();
       });
     });
+  });
 
-    it('should handle an error, which is not an instance of Error', (done) => {
-      function onTask(err, callback) {
-        callback({ test: true });
-      }
-      startReceiver(onTask, () => {
-        const task = makeTasks(1)[0];
-        sendToRunner(task, false, (err, obj) => {
-          if (err) {
-            return done(err);
-          }
-          obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to execute Flex method');
-          obj.error.should.deepEqual({ test: true });
-          return done();
-        });
+  it('should handle an error, which is not an instance of Error', (done) => {
+    function onTask(err, callback) {
+      callback({ test: true });
+    }
+    startReceiver(onTask, () => {
+      const task = makeTasks(1)[0];
+      sendToRunner(task, false, (err, obj) => {
+        if (err) {
+          return done(err);
+        }
+        obj.isError.should.be.true();
+        obj.debugMessage.should.containEql('Unable to execute Flex method');
+        obj.error.should.deepEqual({ test: true });
+        return done();
       });
     });
+  });
 
-    it('should handle an error, which is not serializable', (done) => {
-      function onTask(err, callback) {
-        callback({ test: this });
-      }
-      startReceiver(onTask, () => {
-        const task = makeTasks(1)[0];
-        sendToRunner(task, false, (err, obj) => {
-          if (err) {
-            return done(err);
-          }
-          obj.isError.should.be.true();
-          obj.debugMessage.should.containEql('Unable to execute Flex method');
-          obj.error.should.eql('Error argument not instance of Error and not stringifiable');
-          return done();
-        });
+  it('should handle an error, which is not serializable', (done) => {
+    function onTask(err, callback) {
+      callback({ test: this });
+    }
+    startReceiver(onTask, () => {
+      const task = makeTasks(1)[0];
+      sendToRunner(task, false, (err, obj) => {
+        if (err) {
+          return done(err);
+        }
+        obj.isError.should.be.true();
+        obj.debugMessage.should.containEql('Unable to execute Flex method');
+        obj.error.should.eql('Error argument not instance of Error and not stringifiable');
+        return done();
       });
     });
   });
@@ -251,7 +255,7 @@ describe('tcp receiver', () => {
       setTimeout(() => {
         processed.should.eql(false);
         done();
-      }, 3000);
+      }, 500);
     });
   });
 
