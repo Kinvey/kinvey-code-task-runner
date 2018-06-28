@@ -11,5 +11,4 @@
 // Unauthorized reproduction, transmission or distribution of this file and its
 // contents is a violation of applicable laws.
 
-require('coffee-script/register')
 module.exports = require('./lib/receiver');
