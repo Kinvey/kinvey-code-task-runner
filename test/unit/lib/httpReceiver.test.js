@@ -37,12 +37,12 @@ describe('http receiver', () => {
     });
   }
 
-  function stopReceiver() {
-    runner.stop();
+  function stopReceiver(callback) {
+    runner.stop(callback);
   }
+
   afterEach((done) => {
-    stopReceiver();
-    done();
+    stopReceiver(done);
   });
 
   it('should do a healthcheck', (done) => {
