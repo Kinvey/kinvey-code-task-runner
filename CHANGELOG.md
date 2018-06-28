@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.3.0
+* Added callback to stop method to support graceful shutdown
+
 ### 2.2.4
 * Updated packages that failed nsp audit
 
