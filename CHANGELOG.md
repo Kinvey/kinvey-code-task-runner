@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.3.1
+* Removed last vestiges of CoffeeScript
+
 ### 2.3.0
 * Added callback to stop method to support graceful shutdown
 * Removed CoffeeScript dependency
