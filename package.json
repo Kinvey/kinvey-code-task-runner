@@ -17,11 +17,9 @@
   "dependencies": {
     "async": "1.5.2",
     "body-parser": "1.18.3",
-    "coffee-script": "1.10.0",
     "express": "4.16.3"
   },
   "devDependencies": {
-    "coffeelint": "2.1.0",
     "eslint": "3.0.1",
     "eslint-config-airbnb-base": "1.0.3",
     "eslint-plugin-import": "1.10.3",
