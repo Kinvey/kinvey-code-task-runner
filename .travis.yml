@@ -2,6 +2,9 @@ env:
   global:
     - NODEJS_VERSION='6.11.1'
 
+before_install:
+  - npm i -g npm@^6.0.0
+
 matrix:
   include:
     - language: node_js
