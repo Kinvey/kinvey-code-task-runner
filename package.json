@@ -20,21 +20,21 @@
     "express": "4.16.3"
   },
   "devDependencies": {
-    "eslint": "3.0.1",
-    "eslint-config-airbnb-base": "1.0.3",
-    "eslint-plugin-import": "1.10.3",
+    "eslint": "5.0.1",
+    "eslint-config-kinvey-platform": "kinvey/eslint-kinvey-platform#v0.1.1",
+    "eslint-plugin-import": "2.13.0",
     "mocha": "5.1.1",
     "should": "9.0.2",
     "supertest": "3.1.0"
   },
   "scripts": {
-    "pretest": "./node_modules/.bin/eslint lib test",
-    "lint": "npm run pretest",
+    "pretest": "npm run pretest",
+    "lint": "./node_modules/.bin/eslint lib test *.js",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "mocha test/unit/*/*",
     "test-integration": "echo \"No integration tests available for the moment\"",
-    "test-tcp-receiver": "mocha test/unit/lib/tcpReceiver.test.coffee",
-    "test-http-receiver": "mocha test/unit/lib/httpReceiver.test.coffee",
+    "test-tcp-receiver": "mocha test/unit/lib/tcpReceiver.test.js",
+    "test-http-receiver": "mocha test/unit/lib/httpReceiver.test.js",
     "test-npm-security": "npm audit"
   }
 }
