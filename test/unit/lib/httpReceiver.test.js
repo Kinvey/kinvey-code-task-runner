@@ -13,7 +13,7 @@
 const supertest = require('supertest');
 const runner = require('../../../lib/receiver');
 const should = require('should');
-const bigBody = require('../../scripts/bigBody.json'); // 8.90 KB JSON
+const bigBody = require('../../utils/bigBody.json'); // 8.90 KB JSON
 
 const TEST_URL = 'http://localhost:7777';
 const SERVICE_OBJECT_ROUTE = '/serviceObject';
