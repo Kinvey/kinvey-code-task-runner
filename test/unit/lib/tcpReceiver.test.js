@@ -9,31 +9,25 @@
 // is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
 // or implied. See the License for the specific language governing permissions and limitations under
 // the License.
+const { EOL } = require('os');
+const { EventEmitter } = require('events');
 
 const should = require('should');
 const net = require('net');
 const async = require('async');
+const sinon = require('sinon');
+const proxyquire = require('proxyquire');
 const runner = require('../../../lib/receiver');
+const { makeTasks } = require('../../utils/taskUtils');
+const { create: createNetMock } = require('../mocks/net.mock');
+
+const netMock = createNetMock();
+const logMock = { error: sinon.spy() };
+const tcpReceiver = proxyquire('../../../lib/receivers/tcpReceiver', { net: netMock, '../log/logger': logMock });
 
 const testPort = 7000;
 const testHost = 'localhost';
 const connections = [];
-
-const sampleTask = require('./../../scripts/sampleTask');
-
-function uniqid(prefix) {
-  return (prefix || '') + (Math.random() * 16000000 >>> 0).toString();
-}
-
-function makeCopy(src) {
-  const dest = {};
-  for (const property in src) {
-    if (src.hasOwnProperty(property)) {
-      dest[property] = src[property];
-    }
-  }
-  return dest;
-}
 
 function sendToRunner(tasks, flags, callback) {
   let done = false;
@@ -107,6 +101,7 @@ function sendToRunner(tasks, flags, callback) {
   });
 
   connections.push(conn);
+  return conn;
 }
 
 function startReceiver(taskReceivedCallback, callback, options) {
@@ -130,24 +125,6 @@ function stopReceiver(callback) {
 }
 
 describe('tcp receiver', () => {
-  function makeTasks(count) {
-    const tasks = [];
-
-    for (let i = 0; i < count; i++) {
-      const id = uniqid();
-      const task = makeCopy(sampleTask);
-      task.targetFunction = 'run';
-      task.requestId = id;
-      task.response = makeCopy(task.response);
-      task.response.headers = makeCopy(task.response.headers);
-      task.response.headers['x-test-requestid'] = id;
-      task.blScript = "function run(req, res, modules) {res.body = {id: '#{id}'}; res.complete(201); return '#{id}';}";
-      tasks.push(task);
-    }
-
-    return tasks;
-  }
-
   function checkTaskReplies(tasks, replies) {
     for (const task of tasks) {
       should.exist(replies[task.taskId]);
@@ -325,6 +302,24 @@ describe('tcp receiver', () => {
     });
   });
 
+  it('should return an error message reflecting clinet disconnection', (done) => {
+    let conn;
+
+    function taskReceivedCallback(receivedTask, callback) {
+      conn.end();
+      setTimeout(() => {
+        const errorMsg = callback(null, receivedTask);
+        errorMsg.should.eql('Connection ended by client.');
+        done();
+      }, 100);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      const task = makeTasks(1)[0];
+      conn = sendToRunner(task, false);
+    });
+  });
+
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       callback(null, receivedTask);
@@ -394,5 +389,40 @@ describe('tcp receiver', () => {
         }
       );
     });
+  });
+});
+
+describe('TcpReceiver error scenarios', () => {
+  beforeEach(() => {
+    logMock.error = sinon.spy();
+  });
+
+  it('should return an error reflecting the connection was terminated', (done) => {
+    function onTask(task, callback) {
+      should.exist(task);
+      const errorMsg = callback();
+      errorMsg.should.eql('Connection lost - cannot write response.');
+      done();
+    }
+    tcpReceiver.startServer(onTask, () => {
+      const socketMock = new EventEmitter();
+      netMock.simulateConnection(socketMock);
+      socketMock.destroyed = true;
+      const task = makeTasks(1)[0];
+      socketMock.emit('data', `${JSON.stringify(task)}${EOL}`);
+    }, {});
+  });
+
+  it('should log an error when an error event occurs', (done) => {
+    const onTask = () => {};
+    tcpReceiver.startServer(onTask, () => {
+      const socketMock = new EventEmitter();
+      netMock.simulateConnection(socketMock);
+      const err = new Error('some intentional error');
+      socketMock.emit('error', err);
+      logMock.error.calledOnce.should.eql(true);
+      logMock.error.firstCall.args[0].should.eql(err.stack);
+      done();
+    }, {});
   });
 });
