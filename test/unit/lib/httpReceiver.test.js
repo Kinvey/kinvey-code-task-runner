@@ -47,14 +47,14 @@ describe('http receiver', () => {
 
   it('should do a healthcheck', (done) => {
     startReceiver(null, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(HEALTHCHECK_ROUTE)
         .end((err, res) => {
           if (err) {
             throw (err);
           }
-          //noinspection JSUnresolvedVariable
+          // noinspection JSUnresolvedVariable
           res.body.healthy.should.be.true();
           done();
         });
@@ -75,7 +75,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -96,7 +96,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-App-Metadata', JSON.stringify({ foo: 'bar' }))
@@ -117,7 +117,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -138,7 +138,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Original-Request-Headers', JSON.stringify({ foo: 'bar' }))
@@ -159,7 +159,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -179,7 +179,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Environment-Id', 'abcd')
@@ -200,7 +200,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Environment-Id', 'abcd')
@@ -221,7 +221,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -241,7 +241,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Auth-Key', 'abcd')
@@ -261,7 +261,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -281,7 +281,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Request-Id', 'abcd')
@@ -302,7 +302,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -322,7 +322,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Username', 'abcd')
@@ -344,7 +344,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-Response-Status', 202)
@@ -367,7 +367,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -387,7 +387,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
         .send({ tempObjectStore: { foo: 'bar' }, body: {} })
@@ -408,7 +408,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .set('X-Kinvey-User-Id', 'abcd')
@@ -429,7 +429,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -451,7 +451,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -480,7 +480,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
         .send({ objectName: 'testObject', entityId: 5 })
@@ -506,14 +506,17 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
-        .send({ objectName: 'testObject', entityId: 5, response: {
-          status: 202,
-          body: { foo: 'bar' },
-          headers: { someheader: 'somevalue' }
-        }
+        .send({
+          objectName: 'testObject',
+          entityId: 5,
+          response: {
+            status: 202,
+            body: { foo: 'bar' },
+            headers: { someheader: 'somevalue' }
+          }
         })
         .end(done);
     });
@@ -536,7 +539,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(LOGIC_ROUTE)
         .send(bigBody)
@@ -568,7 +571,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(DISCOVERY_ROUTE)
         .expect(200)
@@ -601,7 +604,7 @@ describe('http receiver', () => {
     }
 
     startReceiver(taskReceivedCallback, () => {
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .post(AUTH_ROUTE)
         .send({ username: 'foo', password: 'bar', options: {} })
@@ -631,7 +634,7 @@ describe('http receiver', () => {
 
     startReceiver(taskReceivedCallback, () => {
       let counter = 2;
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)
@@ -640,7 +643,7 @@ describe('http receiver', () => {
           res.statusCode.should.eql(200);
           counter -= 1;
         });
-      //noinspection JSCheckFunctionSignatures
+      // noinspection JSCheckFunctionSignatures
       supertest(TEST_URL)
         .get(SERVICE_OBJECT_ROUTE)
         .expect(200)

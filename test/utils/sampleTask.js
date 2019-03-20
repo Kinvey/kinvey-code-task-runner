@@ -35,7 +35,7 @@ module.exports =
     platform: 'android'
   },
   targetFunction: 'onRequest',
-  //blScript: 'function onRequest(request, response, modules){\n  modules.collectionAccess.collection(\'user\').find({}, function(err, result) {\n    response.body=result;\n    response.complete();\n    \n    for (var i = 0; i < 1000000; i++){modules.consoleLog(i);}\n    foo.bar();\n\n  });\n}',
+  // blScript: 'function onRequest(request, response, modules){\n  modules.collectionAccess.collection(\'user\').find({}, function(err, result) {\n    response.body=result;\n    response.complete();\n    \n    for (var i = 0; i < 1000000; i++){modules.consoleLog(i);}\n    foo.bar();\n\n  });\n}',
   blScript: 'function onRequest(req, res, modules) {\n  res.body = {a:1,b:2};\n  console.log("onRequest ran");\n}',
   requestId: '0a0efafb80844feea4c9c96b96e899e0',
   collectionName: 'test',
