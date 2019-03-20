@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.4.0
+* Return an error message when unable to write response in TCP receiver
+
 ### 2.3.1
 * Removed last vestiges of CoffeeScript
 
