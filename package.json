@@ -21,8 +21,8 @@
   },
   "devDependencies": {
     "eslint": "5.0.1",
-    "eslint-config-kinvey-platform": "kinvey/eslint-kinvey-platform#0.1.2",
-    "eslint-plugin-import": "2.13.0",
+    "eslint-config-kinvey-platform": "0.1.6",
+    "eslint-plugin-import": "2.16.0",
     "mocha": "5.1.1",
     "proxyquire": "2.1.0",
     "should": "9.0.2",

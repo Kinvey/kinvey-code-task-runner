@@ -1,17 +1,11 @@
 const sampleTask = require('./sampleTask');
 
 function uniqid(prefix) {
-  return (prefix || '') + (Math.random() * 16000000 >>> 0).toString();
+  return (prefix || '') + Math.floor(Math.random() * 16000000).toString();
 }
 
-function makeCopy(src) {
-  const dest = {};
-  for (const property in src) {
-    if (src.hasOwnProperty(property)) {
-      dest[property] = src[property];
-    }
-  }
-  return dest;
+function makeCopy(obj) {
+  return Object.assign({}, obj);
 }
 
 function makeTasks(count) {
