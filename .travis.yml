@@ -11,12 +11,16 @@ matrix:
       env: JOB='LINTING'
       node_js: ${NODEJS_VERSION}
       script: npm run lint
+
+    - language: node_js
+      env: JOB='CODE CLONE'
+      node_js: ${NODEJS_VERSION}
+      script: npm run test-code-clone
       
     - language: node_js
       node_js: ${NODEJS_VERSION}
       env: JOB='UNIT'
       script: npm run test-unit
-
 
     - language: node_js
       node_js: ${NODEJS_VERSION}
