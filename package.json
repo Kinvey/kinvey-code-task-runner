@@ -37,6 +37,6 @@
     "test-integration": "echo \"No integration tests available for the moment\"",
     "test-tcp-receiver": "mocha test/unit/lib/tcpReceiver.test.js",
     "test-http-receiver": "mocha test/unit/lib/httpReceiver.test.js",
-    "test-npm-security": "npm audit"
+    "test-npm-security": "npm audit --production --audit-level=high"
   }
 }
