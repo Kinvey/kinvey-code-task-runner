@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.4.1
+* Fixed several security vulnerabilities
+
 ### 2.4.0
 * Return an error message when unable to write response in TCP receiver
 
