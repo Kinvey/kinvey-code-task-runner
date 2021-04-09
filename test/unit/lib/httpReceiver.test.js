@@ -437,6 +437,57 @@ describe('http receiver', () => {
     });
   });
 
+  it('should add loginOptions and remove username and userId for loginHooks', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = {};
+      receivedTask.response.continue = true;
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      // noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .send({ loginOptions: { type: 'kinvey' } })
+        .set('X-Kinvey-Username', 'abcd')
+        .set('X-Kinvey-User-Id', 'abcd')
+        .expect(200)
+        .end((err, res) => {
+          should.not.exist(res.body.request.userId);
+          should.not.exist(res.body.request.username);
+          res.body.request.loginOptions.should.be.an.Object();
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
+  it('should not return loginOptions and set username and userid for non loginHooks', (done) => {
+    function taskReceivedCallback(receivedTask, callback) {
+      receivedTask.response.statusCode = 200;
+      receivedTask.response.body = {};
+      receivedTask.response.continue = true;
+      callback(null, receivedTask);
+    }
+
+    startReceiver(taskReceivedCallback, () => {
+      // noinspection JSCheckFunctionSignatures
+      supertest(TEST_URL)
+        .post(LOGIC_ROUTE)
+        .set('X-Kinvey-Username', 'abcd')
+        .set('X-Kinvey-User-Id', 'abcd')
+        .expect(200)
+        .end((err, res) => {
+          should.exist(res.body.request.userId);
+          should.exist(res.body.request.username);
+          should.not.exist(res.body.request.loginOptions);
+          res.statusCode.should.eql(200);
+          done();
+        });
+    });
+  });
+
   it('should send a response', (done) => {
     function taskReceivedCallback(receivedTask, callback) {
       receivedTask.should.be.an.Object();
