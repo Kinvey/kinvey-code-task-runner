@@ -1,6 +1,6 @@
 {
   "name": "kinvey-code-task-runner",
-  "version": "2.4.1",
+  "version": "2.5.0",
   "description": "Task Runner for Kinvey Microservices",
   "engines": {
     "node": "= 0.10.x"
@@ -20,8 +20,8 @@
     "express": "4.16.3"
   },
   "devDependencies": {
+    "@progresskinvey/eslint-config-kinvey-platform": "0.2.0",
     "eslint": "5.16.0",
-    "eslint-config-kinvey-platform": "0.1.6",
     "eslint-plugin-import": "2.16.0",
     "mocha": "5.1.1",
     "proxyquire": "2.1.0",
@@ -30,8 +30,8 @@
     "supertest": "3.1.0"
   },
   "scripts": {
-    "pretest": "npm run pretest",
-    "lint": "./node_modules/.bin/eslint lib test *.js",
+    "pretest": "npm run lint",
+    "lint": "./node_modules/.bin/eslint lib test *.js --color",
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "mocha test/unit/*/*",
     "test-integration": "echo \"No integration tests available for the moment\"",
