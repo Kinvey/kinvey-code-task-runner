@@ -1,5 +1,8 @@
 ## Changelog
 
+### 2.5.0
+* Add login hooks properties
+
 ### 2.4.1
 * Fixed several security vulnerabilities
 
