@@ -15,7 +15,7 @@
     "Michael Salinger <mjsalinger@kinvey.com>"
   ],
   "dependencies": {
-    "async": "1.5.2",
+    "async": "3.2.2",
     "body-parser": "1.18.3",
     "express": "4.16.3"
   },
