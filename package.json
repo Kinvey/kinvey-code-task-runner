@@ -17,7 +17,8 @@
   "dependencies": {
     "async": "1.5.2",
     "body-parser": "1.18.3",
-    "express": "4.16.3"
+    "express": "4.16.3",
+    "jscpd": "3.4.5"
   },
   "devDependencies": {
     "@progresskinvey/eslint-config-kinvey-platform": "0.2.0",
@@ -35,6 +36,7 @@
     "test": "npm run test-unit && npm run test-integration",
     "test-unit": "mocha test/unit/*/*",
     "test-integration": "echo \"No integration tests available for the moment\"",
+    "test-code-clone": "jscpd lib -f javascript -r time,consoleFull,console -x 2000 -z 100kb -t 4.9",
     "test-tcp-receiver": "mocha test/unit/lib/tcpReceiver.test.js",
     "test-http-receiver": "mocha test/unit/lib/httpReceiver.test.js",
     "test-npm-security": "npm audit --production --audit-level=high"
