@@ -1,0 +1,292 @@
+#!groovy
+/*
+ * Copyright (c) 2021, Kinvey, Inc. All rights reserved.
+ *
+ * This software is licensed to you under the Kinvey terms of service located at
+ * http://www.kinvey.com/terms-of-use. By downloading, accessing and/or using this
+ * software, you hereby accept such terms of service  (and any agreement referenced
+ * therein) and agree that you have read, understand and agree to be bound by such
+ * terms of service and are of legal age to agree to such terms with Kinvey.
+ *
+ * This software contains valuable confidential and proprietary information of
+ * KINVEY, INC and is subject to applicable licensing agreements.
+ * Unauthorized reproduction, transmission or distribution of this file and its
+ * contents is a violation of applicable laws.
+*/
+
+def mainBranch = 'master'
+boolean skipTests = false
+
+def GitHubNotify(context, status, description) {
+  githubNotify context: context, status: status, description: description, targetUrl: "${env.BUILD_URL}"
+}
+
+pipeline {
+  agent none
+  options {
+    buildDiscarder logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '120', daysToKeepStr: '', numToKeepStr: '120')
+    preserveStashes buildCount: 30
+    durabilityHint 'MAX_SURVIVABILITY'
+    disableConcurrentBuilds()
+    ansiColor('xterm')
+    timestamps()
+  }
+  environment {
+    NPM_TOKEN = credentials('npmjs-publish-token')
+  }
+  stages {
+    stage('Check if we should skip pipeline') {
+      agent {
+        kubernetes {
+          cloud 'sharedinfra'
+          label 'sharedinfra-nodejs'
+        }
+      }
+      when {
+        allOf {
+          branch mainBranch
+          changelog '.*^\\[skip-ci\\].+$'
+        }
+      }
+      steps {
+        script {
+          skipTests = true
+        }
+      }
+    }
+    stage('Run static tests') {
+      when {
+        not { expression { skipTests } }
+      }
+      parallel {
+        stage('NPM deps check') {
+          agent {
+            kubernetes {
+              cloud 'sharedinfra'
+              label 'sharedinfra-nodejs12'
+            }
+          }
+          steps {
+            GitHubNotify("ci/dep-check", "PENDING", "")
+            container('nodejs') {
+              writeFile file: 'checkNpmPackageVersions.js', text: libraryResource('checkNpmPackageVersions.js')
+              sh "node checkNpmPackageVersions.js"  
+            }
+          }
+          post {
+            success {
+              GitHubNotify("ci/dep-check", "SUCCESS", "Done")
+            }
+            failure {
+              GitHubNotify("ci/dep-check", "FAILURE", "Failed")
+            }
+          }
+        }
+        stage('Code duplication check') {
+          agent {
+            kubernetes {
+              cloud 'sharedinfra'
+              label 'sharedinfra-nodejs10'
+            }
+          }
+          steps {
+            GitHubNotify("ci/code-duplicate", "PENDING", "")
+            container('nodejs') {
+              sh "npm install"
+              sh "npm run test-code-clone"
+            }
+          }
+          post {
+            success {
+              GitHubNotify("ci/code-duplicate", "SUCCESS", "Done")
+            }
+            failure {
+              GitHubNotify("ci/code-duplicate", "FAILURE", "Failed")
+            }
+          }
+        }
+        stage('Lint check') {
+          agent {
+            kubernetes {
+              cloud 'sharedinfra'
+              label 'sharedinfra-nodejs12'
+            }
+          }
+          steps {
+            GitHubNotify("ci/lint", "PENDING", "")
+            container('nodejs') {
+              sh "npm install"
+              sh "npm run lint"
+            }
+          }
+          post {
+            success {
+              GitHubNotify("ci/lint", "SUCCESS", "Done")
+            }
+            failure {
+              GitHubNotify("ci/lint", "FAILURE", "Failed")
+            }
+          }
+        }
+        stage('Unit tests') {
+          agent {
+            kubernetes {
+              cloud 'sharedinfra'
+              label 'sharedinfra-nodejs12'
+            }
+          }
+          steps {
+            GitHubNotify("ci/unit-tests", "PENDING", "")
+            container('nodejs') {
+              sh "npm install"
+              sh "npm run test-unit"
+            }
+          }
+          post {
+            success {
+              GitHubNotify("ci/unit-tests", "SUCCESS", "Done")
+            }
+            failure {
+              GitHubNotify("ci/unit-tests", "FAILURE", "Failed")
+            }
+          }
+        }
+        stage('NPM security') {
+          agent {
+            kubernetes {
+              cloud 'sharedinfra'
+              label 'sharedinfra-nodejs12'
+            }
+          }
+          steps {
+            GitHubNotify("ci/npm-security", "PENDING", "")
+            container('nodejs') {
+              catchError(buildResult: 'UNSTABLE', stageResult: 'FAILURE') {
+                sh "npm run test-npm-security"
+              }
+            }
+          }
+         post {
+            success {
+              GitHubNotify("ci/npm-security", "SUCCESS", "Done")
+            }
+            failure {
+              GitHubNotify("ci/npm-security", "FAILURE", "Failed")
+            }
+          }
+        }
+      }
+    }
+    stage('Run integration tests') {
+      when {
+        beforeAgent true
+        not { expression { skipTests } }
+      }
+      agent {
+        kubernetes {
+          cloud 'sharedinfra'
+          label 'sharedinfra-nodejs12'
+        }
+      }
+      steps {
+        GitHubNotify("ci/integration-tests", "PENDING", "")
+        container('nodejs') {
+          catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+            sh "npm install"
+            sh "npm run test-integration"
+          }
+        }
+      }
+      post {
+        success {
+          GitHubNotify("ci/integration-tests", "SUCCESS", "Done")
+        }
+        failure {
+          GitHubNotify("ci/integration-tests", "FAILURE", "Failed")
+        }
+      }
+    }
+    stage('Create tag') {
+      options {
+        timeout(time: 1, unit: 'HOURS')
+      }
+      agent {
+        kubernetes {
+          cloud 'sharedinfra'
+          label 'sharedinfra-nodejs'
+        }
+      }
+      when {
+        branch mainBranch
+        beforeAgent true
+        beforeInput true
+        not { expression { skipTests } }
+      }
+      input {
+        message 'Create tag?'
+        ok 'Create tag'
+      }
+      steps {
+        container('nodejs') {
+          writeFile file: 'createTag.sh', text: libraryResource('createTag.sh')
+          sshagent(['github-key']) {
+            withCredentials([
+              usernamePassword(
+                credentialsId: 'github-scan-credentials',
+                passwordVariable: 'GITHUB_TOKEN',
+                usernameVariable: 'GITHUB_USER')]) {
+                  sh 'bash createTag.sh'
+            }
+          }
+        }
+      }
+    }
+    stage('NPM Publish') {
+      agent {
+        kubernetes {
+          cloud 'sharedinfra'
+          label 'sharedinfra-nodejs'
+        }
+      }
+      when {
+        beforeAgent true
+        branch mainBranch
+        not { expression { skipTests } }
+      }
+      steps {
+        container('nodejs') {
+          sh "npm publish"
+        }
+      }
+    }
+    stage('Bump package version') {
+      agent {
+        kubernetes {
+          cloud 'sharedinfra'
+          label 'sharedinfra-nodejs'
+        }
+      }
+      when {
+        branch mainBranch
+        beforeAgent true
+        not { expression { skipTests } }
+      }
+      steps {
+        container('nodejs') {
+          writeFile file: 'bumpVersion.sh', text: libraryResource('bumpVersion.sh')
+          sshagent(['github-key']) {
+            withCredentials([
+              usernamePassword(
+                credentialsId: 'github-scan-credentials',
+                passwordVariable: 'GITHUB_TOKEN',
+                usernameVariable: 'GITHUB_USER')]) {
+                  sh 'npm install auto-changelog@1.13.0 --no-save'
+                  sh 'git checkout master'
+                  sh 'bash bumpVersion.sh'
+            }
+          }
+        }
+      }
+    }
+  }
+}
