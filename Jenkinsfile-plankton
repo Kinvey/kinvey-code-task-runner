@@ -206,35 +206,6 @@ pipeline {
         }
       }
     }
-    stage('Generate changelog') {
-      agent {
-        kubernetes {
-          cloud 'sharedinfra'
-          label 'sharedinfra-nodejs'
-        }
-      }
-      when {
-        beforeAgent true
-        branch mainBranch
-        not { expression { skipTests } }
-      }
-      steps {
-        container('nodejs') {
-          writeFile file: 'generateChangelog.sh', text: libraryResource('generateChangelog.sh')
-          sshagent(['github-key']) {
-            withCredentials([
-              usernamePassword(
-                credentialsId: 'github-scan-credentials',
-                passwordVariable: 'GITHUB_TOKEN',
-                usernameVariable: 'GITHUB_USER')]) {
-                  sh 'npm install auto-changelog@1.13.0 --no-save'
-                  sh 'git checkout master'
-                  sh 'bash generateChangelog.sh'
-            }
-          }
-        }
-      }
-    }
     stage('Create tag') {
       options {
         timeout(time: 1, unit: 'HOURS')
