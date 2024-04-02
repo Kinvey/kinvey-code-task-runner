@@ -17,13 +17,13 @@
   "dependencies": {
     "async": "2.6.4",
     "body-parser": "1.20.2",
-    "express": "4.19.2",
-    "jscpd": "3.4.5"
+    "express": "4.19.2"
   },
   "devDependencies": {
     "@progresskinvey/eslint-config-kinvey-platform": "0.2.0",
     "eslint": "5.16.0",
     "eslint-plugin-import": "2.16.0",
+    "jscpd": "3.5.10",
     "mocha": "10.2.0",
     "proxyquire": "2.1.0",
     "should": "9.0.2",
